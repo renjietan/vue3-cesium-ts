@@ -18,13 +18,13 @@ const addRoutes = function(nodes: RouteRecordRaw[], path: (RouteRecordName | und
         let _path = [...path]
         _path.push(item.name)
         let parentName = _path[_path.length - 2]
+        let children = item.children as RouteRecordRaw[]
+        delete item.children
         if(parentName) {
             router.addRoute(parentName, item)
         } else {
             router.addRoute(item)
         }
-        let children = item.children as RouteRecordRaw[]
-        delete item.children
         item.children && addRoutes(children, _path)
     })
 }
