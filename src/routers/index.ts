@@ -1,4 +1,4 @@
-import {RouteRecordName, RouteRecordRaw, createRouter,createWebHashHistory}  from "vue-router";
+import {NavigationGuardNext, RouteRecordName, RouteRecordRaw, createRouter,createWebHashHistory}  from "vue-router";
 import asyncRouters from '@/mock/async_routers'
 import { convertToTree } from "@/utils";
 import viewComponents from "./viewComponents";
@@ -9,7 +9,6 @@ const router = createRouter({
         path: '/',
         name: 'home',
         component: viewComponents['empty'],
-        redirect: '/Cesium/dyhf'
     }]
 })
 
@@ -25,11 +24,11 @@ const addRoutes = function(nodes: RouteRecordRaw[], path: (RouteRecordName | und
         } else {
             router.addRoute(item)
         }
-        item.children && addRoutes(children, _path)
+        children && addRoutes(children, _path)
     })
 }
 
-router.beforeEach((to,from, next) => {
+router.beforeEach((to,from, next:NavigationGuardNext) => {
     let temp:RouteNode[] = asyncRouters.map<RouteNode>(item => {
         return {
             id: item.id,
@@ -44,7 +43,14 @@ router.beforeEach((to,from, next) => {
     })
     let routers = convertToTree(temp) as unknown[] as RouteRecordRaw[]
     addRoutes(routers)
-    next()
+    if(to.path == '/') {
+        next('/Cesium/base/dyhf')
+    } else {
+        next()
+    }
 })
-
+router.afterEach(() => {
+    console.log('afterEach===========================', router.getRoutes());
+    
+})
 export default router

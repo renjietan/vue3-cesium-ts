@@ -1,6 +1,4 @@
-import { Component } from "vue"
-import { RouteRecordRaw } from "vue-router"
-interface RouteNode {
+export interface RouteNode {
     id: string;
     path: string;
     name: string;

@@ -1,34 +1,29 @@
-import viewComponents from "@/routers/viewComponents";
 import { RouteNode } from "@/types/router";
 
-export const convertToTree = function (list: any[]): RouteNode[] {
-    const map = new Map<string, RouteNode>();
-    const result: RouteNode[] = [];
+type jsonType = {
+    [key: string]: any
+}
 
-    // 创建map以便于通过parentId查找节点
-    list.forEach(item => {
-        map.set(item.id, {
-            ...item,
-            children: [] // 初始化children数组
-        });
+export const convertToTree = function(nodes: any[]) {
+    const tree:any[] = [];
+    const children: jsonType = {};
+    nodes.forEach(node => {
+        children[node.id] = { ...node, children: [] };
     });
 
-    // 构建树状结构
-    list.forEach(item => {
-        const node = map.get(item.id);
-        if (node) {
-            // 如果存在parentId，则将当前节点添加到父节点的children中
-            if (item.parentId) {
-                const parent = map.get(item.parentId);
-                if (parent) {
-                    parent.children && parent.children.push(node);
-                }
-            } else {
-                // 如果没有parentId，则直接添加到结果数组中
-                result.push(node);
-            }
+    function findParent(node: any) {
+        return children[node.parentId] || null;
+    }
+
+    function build(node: any) {
+        const parent = findParent(node);
+        if (parent) {
+            parent.children.push(node);
+        } else {
+            tree.push(node);
         }
-    });
+    }
 
-    return result;
+    nodes.forEach(node => build(children[node.id]));
+    return tree;
 }
