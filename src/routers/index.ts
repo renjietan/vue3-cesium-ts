@@ -1,8 +1,9 @@
-import {NavigationGuardNext, RouteRecordName, RouteRecordRaw, createRouter,createWebHashHistory}  from "vue-router";
+import { NavigationGuardNext, RouteRecordName, RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 import asyncRouters from '@/mock/async_routers'
 import { convertToTree } from "@/utils";
 import viewComponents from "./viewComponents";
 import { RouteNode } from "@/types/router";
+
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [{
@@ -12,14 +13,14 @@ const router = createRouter({
     }]
 })
 
-const addRoutes = function(nodes: RouteRecordRaw[], path: (RouteRecordName | undefined)[] = []) {
+const addRoutes = function (nodes: RouteRecordRaw[], path: (RouteRecordName | undefined)[] = []) {
     nodes.forEach(item => {
         let _path = [...path]
         _path.push(item.name)
         let parentName = _path[_path.length - 2]
         let children = item.children as RouteRecordRaw[]
         delete item.children
-        if(parentName) {
+        if (parentName) {
             router.addRoute(parentName, item)
         } else {
             router.addRoute(item)
@@ -28,8 +29,8 @@ const addRoutes = function(nodes: RouteRecordRaw[], path: (RouteRecordName | und
     })
 }
 
-router.beforeEach((to,from, next:NavigationGuardNext) => {
-    let temp:RouteNode[] = asyncRouters.map<RouteNode>(item => {
+router.beforeEach((to, from, next: NavigationGuardNext) => {
+    let temp: RouteNode[] = asyncRouters.map<RouteNode>(item => {
         return {
             id: item.id,
             parentId: item.parentId,
@@ -43,14 +44,13 @@ router.beforeEach((to,from, next:NavigationGuardNext) => {
     })
     let routers = convertToTree(temp) as unknown[] as RouteRecordRaw[]
     addRoutes(routers)
-    if(to.path == '/') {
-        next('/Cesium/base/dyhf')
+    if (to.path == '/') {
+        next(`/Cesium/base/entity_2d`)
     } else {
         next()
     }
 })
-router.afterEach(() => {
-    console.log('afterEach===========================', router.getRoutes());
-    
+router.afterEach((to) => {
+    console.log(to);
 })
 export default router

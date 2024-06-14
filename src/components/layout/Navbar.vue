@@ -1,6 +1,6 @@
 
 <template>
-  <el-menu popper-effect="dark" v-model="active" :unique-opened="true">
+  <el-menu popper-effect="dark" :defaultActive="active" router :unique-opened="true">
     <template v-for="item in menu">
       <!-- 如果有子集 -->
       <template v-if="item.children && item.children.length > 0">
@@ -16,7 +16,7 @@
       </template>
       <!-- 如果没有子集 -->
       <template v-else>
-        <el-menu-item route :key="item.id" :index="item.id" :disabled="item.meta?.disabled"
+        <el-menu-item route :key="item.id" :index="item.nodePath.join('/')" :disabled="item.meta?.disabled"
           :popper-append-to-body="false" @click="clickItemHandle(item)">
           <i :class="[item.meta?.icon]"></i>
           <!-- 添加空格 表示下级-->
@@ -30,8 +30,6 @@
 <script lang="ts" name="Navbar" setup>
 // 把下面代码变成setup语法糖的形式 
 import type { PropType } from "vue";
-import { useRouter } from "vue-router";
-// type 为了方便写成这样 可以根据自己项目设定type
 const props = defineProps({
   menu: {
     type: Array as unknown as PropType<any[]>,
@@ -39,12 +37,15 @@ const props = defineProps({
     default: () => [],
   },
   defaultActive: {
-    type: [String, Number] as unknown as PropType<string | number>,
+    type: String,
     required: true,
-    default: () => '1-1-1-1-2',
+    default: () => '/Cesium/base/entity_2d',
   },
 });
+
+
 const active = ref(props.defaultActive)
+
 const emit = defineEmits(["update-active-path", "clickItem"]);
 // 返回的空格字符串 用于显示菜单层级 
 const generateSpaces = (level: string) => {
@@ -54,10 +55,8 @@ const generateSpaces = (level: string) => {
   });
   return str;
 };
-const router = useRouter()
 // 点击当前菜单项
 const clickItemHandle = (item: any) => {
-  router.push(item.path)
   emit("clickItem", item);
 };
 </script>

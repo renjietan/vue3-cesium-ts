@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
+import * as Cesium from 'cesium';
 export const useMapStore = defineStore('mapStore', {
     // 相当于data
     state: () => {
         return {
-            viewer: <any>null,
+            viewer: <Cesium.Viewer | null>null,
         }
     },
     // 相当于计算属性

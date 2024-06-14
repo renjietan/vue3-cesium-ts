@@ -6,8 +6,9 @@ export interface RouteNode {
     parentId?: string;
     redirect?: string,
     children?: RouteNode[];
-    title?: string
+    title?: string,
     meta?: {
         title?: string
-    }
+    },
+    [key: string]: any
 }
